@@ -37,6 +37,10 @@ org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
     // initialize to zero
     for (var i = 0; i < this.matrixLen; i++) this.matrix[i] = 0;
 
+    // cache percent alike
+    // stored as 8-bit ints, with 0 being 0% alike and 255 being 100% alike.
+    this.percentAlike = new Uint8ClampedArray(this.matrixLen);
+
     // populate the matrix
     for (var i = 0; i < n1; i++) {
         var cell  = this.getVacantCell();
@@ -48,9 +52,11 @@ org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
         this.matrix[cell] = 2;
     }
 
-    // populate unhappy cell cache
-    for (var i = 0; i < this.matrixLen; i++)
+    // populate cell caches
+    for (var i = 0; i < this.matrixLen; i++) {
         this.cellStatus[i] = this.getCellStatus(i);
+        this.percentAlike[i] = Math.round(this.getCellAlike(i) * 255);
+    }
 
     // build the display board
     this.board = d3.select('#board')
@@ -157,6 +163,7 @@ org.indicatrix.Segregation.prototype.step = function () {
     for (var i = 0; i < 18; i++) {
         var cell = neighbors[i];
         this.cellStatus[cell] = this.getCellStatus(cell);
+        this.percentAlike[cell] = Math.floor(this.getCellAlike(cell) * 255);
     }
 
     return true;
@@ -186,23 +193,7 @@ org.indicatrix.Segregation.prototype.getUnhappyCell = function () {
 }
 
 org.indicatrix.Segregation.prototype.isCellUnhappy = function (cell) {
-    thisCell = this.matrix[cell];
-    var like = 0;
-    var total = 0;
- 
-    neighbors = this.getNeighbors(cell);
-   
-    for (var i = 0; i < 8; i++) {
-        cellValue = this.matrix[neighbors[i]];
-        if (cellValue != 0) {
-            total += 1;
-            if (cellValue == thisCell) {
-                like += 1;
-            }
-        }
-    }
-
-    return (like / total) < this.tolerance;
+    return this.getCellAlike(cell) < this.tolerance;
 }
 
 /**
@@ -247,6 +238,33 @@ org.indicatrix.Segregation.prototype.getCellStatus = function (i) {
     else
         return this.isCellUnhappy(i) ? 2 : 1;
 }
+
+/**
+ * Get the percent-alike of a cell, as a float in [0, 1].
+ * @param {int} cell The cell
+ * @returns int amount alike
+ */
+org.indicatrix.Segregation.prototype.getCellAlike = function (cell) {
+    thisCell = this.matrix[cell];
+
+    var like = 0;
+    var total = 0;
+ 
+    neighbors = this.getNeighbors(cell);
+   
+    for (var i = 0; i < 8; i++) {
+        cellValue = this.matrix[neighbors[i]];
+        if (cellValue != 0) {
+            total += 1;
+            if (cellValue == thisCell) {
+                like += 1;
+            }
+        }
+    }
+
+    return like / total;
+} 
+
     
 org.indicatrix.Segregation.prototype.torus = function (i) {
     if (i < 0) return this.size - i;
@@ -276,4 +294,35 @@ org.indicatrix.Segregation.prototype.getCoordinatesForCell = function(i) {
 
 org.indicatrix.Segregation.prototype.getCellForCoordinates = function(row, col) {
     return row * this.size + col;
+}
+
+/**
+ * Get the average percent alike for all cells
+ */
+org.indicatrix.Segregation.prototype.getMeanPercentAlike = function () {
+    var accumulator = 0;
+    for (var i = 0; i < this.matrixLen; i++) {
+        if (this.matrix[i] == 0)
+            continue;
+        accumulator += this.percentAlike[i] / 255;
+    }
+
+    return accumulator / this.matrixLen;
+}
+
+/**
+ * Get the percentage of unhappy cells
+ */
+org.indicatrix.Segregation.prototype.getPercentUnhappy = function () {
+    var unhappy = 0;
+    var n = 0;
+    for (var i = 0; i < this.matrixLen; i++) {
+        if (this.cellStatus[i] != 0) {
+            n++;
+            if (this.cellStatus[i] == 2) {
+                unhappy++;
+            }
+        }
+    }
+    return unhappy / n;
 }
