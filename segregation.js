@@ -32,6 +32,8 @@ org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
     // build the matrix
     this.matrixLen = Math.pow(size, 2);
     this.matrix = new Int8Array(this.matrixLen);
+    // cache unhappy cells
+    this.cellStatus = new Int8Array(this.matrixLen);
     // initialize to zero
     for (var i = 0; i < this.matrixLen; i++) this.matrix[i] = 0;
 
@@ -45,6 +47,10 @@ org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
         var cell  = this.getVacantCell();
         this.matrix[cell] = 2;
     }
+
+    // populate unhappy cell cache
+    for (var i = 0; i < this.matrixLen; i++)
+        this.cellStatus[i] = this.getCellStatus(i);
 
     // build the display board
     this.board = d3.select('#board')
@@ -117,7 +123,7 @@ org.indicatrix.Segregation.prototype.display = function () {
         if (this.matrix[i] == 2)
             theClass = 'group2'
 
-        if (this.isCellUnhappy(i))
+        if (this.cellStatus[i] == 2)
             theClass += ' unhappy';
         else
             theClass += ' happy';
@@ -140,8 +146,18 @@ org.indicatrix.Segregation.prototype.step = function () {
     
     // move
     this.matrix[dest] = this.matrix[orig];
-    // vacate the orignal
+    // vacate the original
     this.matrix[orig] = 0;
+
+    // update cache
+    var neighbors = this.getNeighbors(orig).concat(this.getNeighbors(dest));
+    neighbors.push(orig);
+    neighbors.push(dest);
+    
+    for (var i = 0; i < 18; i++) {
+        var cell = neighbors[i];
+        this.cellStatus[cell] = this.getCellStatus(cell);
+    }
 
     return true;
 }
@@ -163,7 +179,7 @@ org.indicatrix.Segregation.prototype.getVacantCell = function () {
 org.indicatrix.Segregation.prototype.getUnhappyCell = function () {
     var unhappyCells = [];
     for (var i = 0; i < this.matrixLen; i++) {
-        if (this.matrix[i] != 0 && this.isCellUnhappy(i)) unhappyCells.push(i);
+        if (this.cellStatus[i] == 2) unhappyCells.push(i);
     }
 
     return this.randomDraw(unhappyCells);
@@ -173,7 +189,26 @@ org.indicatrix.Segregation.prototype.isCellUnhappy = function (cell) {
     thisCell = this.matrix[cell];
     var like = 0;
     var total = 0;
-    
+ 
+    neighbors = this.getNeighbors(cell);
+   
+    for (var i = 0; i < 8; i++) {
+        cellValue = this.matrix[neighbors[i]];
+        if (cellValue != 0) {
+            total += 1;
+            if (cellValue == thisCell) {
+                like += 1;
+            }
+        }
+    }
+
+    return (like / total) < this.tolerance;
+}
+
+/**
+ * Get the cell indices of a cell's neighbors, correcting for edge effects
+ */
+org.indicatrix.Segregation.prototype.getNeighbors = function (cell) {
     var coords = this.getCoordinatesForCell(cell);
     var r = coords.row;
     var c = coords.col;
@@ -188,20 +223,29 @@ org.indicatrix.Segregation.prototype.isCellUnhappy = function (cell) {
         [r - 1, c - 1]
     ];
 
+    var ret = [];
+
     for (var i = 0; i < 8; i++) {
         var nb = neighbors[i];
         // correct edge effects
-        nb = [this.torus(nb[0]), this.torus(nb[1])]
-        cellValue = this.matrix[this.getCellForCoordinates(nb[0], nb[1])];
-        if (cellValue != 0) {
-            total += 1;
-            if (cellValue == thisCell) {
-                like += 1;
-            }
-        }
+        nb = [this.torus(nb[0]), this.torus(nb[1])];
+        ret.push(this.getCellForCoordinates(nb[0], nb[1]));
     }
 
-    return (like / total) < this.tolerance;
+    return ret;
+}
+
+
+/**
+ * Get the status of a cell
+ * @param {int} i the cell
+ * @returns 0 if vacant, 1 if happy, 2 if unhappy
+ */
+org.indicatrix.Segregation.prototype.getCellStatus = function (i) {
+    if (this.matrix[i] == 0)
+        return 0;
+    else
+        return this.isCellUnhappy(i) ? 2 : 1;
 }
     
 org.indicatrix.Segregation.prototype.torus = function (i) {
