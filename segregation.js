@@ -30,9 +30,10 @@ org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
     }
 
     // build the matrix
-    this.matrix = [];
-    for (var i = 0; i < Math.pow(this.size, 2); i++) this.matrix.push(0);
-    this.matrixLen = this.matrix.length;
+    this.matrixLen = Math.pow(size, 2);
+    this.matrix = new Int8Array(this.matrixLen);
+    // initialize to zero
+    for (var i = 0; i < this.matrixLen; i++) this.matrix[i] = 0;
 
     // populate the matrix
     for (var i = 0; i < n1; i++) {
