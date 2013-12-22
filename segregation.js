@@ -99,6 +99,10 @@ org.indicatrix.Segregation.prototype.start = function () {
     doStep();
 }
 
+org.indicatrix.Segregation.prototype.stop = function () {
+    clearTimeout(this.timeout);
+}
+
 org.indicatrix.Segregation.prototype.display = function () {
     for (var i = 0; i < this.matrixLen; i++) {
         if (this.matrix[i] == 0) {

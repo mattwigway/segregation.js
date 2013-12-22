@@ -17,7 +17,7 @@
    -->
 
   <head>
-    <title>Schelling's Spatial Segregation Model</title>
+    <title>Schellings Spatial Segregation Model</title>
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="segregation.js"></script>
 
@@ -26,6 +26,47 @@
   <body>
     <div id="content">
       <div id="controls">
+        <form id="input">
+          <table>
+            <tr>
+              <td>
+                <label for="tolerance">Tolerance</label>
+              </td>
+              <td colspan="2">
+                <input type="range" id="tolerance" min="0" max="1" step="0.01" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="fill">Fill factor</label>
+              </td>
+              <td colspan="2">
+                <input type="range" id="fill" min="0" max="1" step="0.01" value="0.95" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="size">Grid size</label>
+              </td>
+              <td colspan="2">
+                <input type="range" id="size" min="2" max="20" step="1" value="12" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="balance">Balance</label>
+              </td>
+              <td colspan="2">
+                <input type="range" id="balance" min="0" max="1" step="0.01" value="0.5" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3">
+                <a href="#" onclick="run()">Run Model</a>
+              </td>
+            </tr>
+          </table>
+        </form>
       </div>
       
       <div id="board">
@@ -34,5 +75,23 @@
 
       <div class="clear"></div>
     </div>
+
+    <script type="text/javascript">
+      function run() {
+          if (typeof(s) != 'undefined')
+              s.stop();
+
+          
+          d3.select('#board').html('');
+          var tol = d3.select('#tolerance')[0][0].value;
+          var size = d3.select('#size')[0][0].value;
+          var fill = d3.select('#fill')[0][0].value;
+          var totalAgents = fill * (Math.pow(size, 2) - 1); // there needs always to be a single vacant square
+          var n2 = d3.select('#balance')[0][0].value * totalAgents;
+          var n1 = totalAgents - n2;
+          s = new org.indicatrix.Segregation(size, 300, tol, n1, n2);
+          s.start();
+      }
+    </script>
   </body>
 </html>
