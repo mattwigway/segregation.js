@@ -185,7 +185,6 @@ org.indicatrix.Segregation.prototype.start = function () {
 
     var doStep;
     doStep = function () {
-        console.log('stepping');
         var done = false;
         for (var i = 0; i < 20; i++) {
             if (!instance.step()) {
