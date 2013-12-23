@@ -32,32 +32,48 @@
               <td>
                 <label for="tolerance">Threshold</label>
               </td>
-              <td colspan="2">
-                <input type="range" id="tolerance" min="0" max="1" step="0.01" />
+              <td >
+                <input type="range" id="tolerance" oninput="toleranceReadout.value = '' + Math.round(this.value * 100) + '%'"
+                       min="0" max="1" step="0.01" value="0.3" />
+              </td>
+              <td>
+                <output for="tolerance" class="inputReadout" name="toleranceReadout" />
               </td>
             </tr>
             <tr>
               <td>
                 <label for="fill">Fill factor</label>
               </td>
-              <td colspan="2">
-                <input type="range" id="fill" min="0" max="1" step="0.01" value="0.95" />
+              <td >
+                <input type="range" id="fill" oninput="fillReadout.value = '' + Math.round(this.value * 100) + '%'"
+                       min="0" max="1" step="0.01" value="0.95" />
+              </td>
+              <td>
+                <output for="fill" class="inputReadout" name="fillReadout" />
               </td>
             </tr>
             <tr>
               <td>
                 <label for="size">Grid size</label>
               </td>
-              <td colspan="2">
-                <input type="range" id="size" min="2" max="40" step="1" value="30" />
+              <td >
+                <input type="range" id="size" oninput="sizeReadout.value = '' + this.value + 'x' + this.value"
+                       min="2" max="40" step="1" value="30" />
+              </td>
+              <td>
+                <output for="size" class="inputReadout" name="sizeReadout" />
               </td>
             </tr>
             <tr>
               <td>
                 <label for="balance">Balance</label>
               </td>
-              <td colspan="2">
-                <input type="range" id="balance" min="0" max="1" step="0.01" value="0.5" />
+              <td>
+                <input type="range" id="balance" oninput="balanceReadout.value = '' + Math.round(this.value * 100) + '%'"
+                       min="0" max="1" step="0.01" value="0.5" />
+              </td>
+              <td>
+                <output for="balance" class="inputReadout" name="balanceReadout" />
               </td>
             </tr>
             <tr>
@@ -88,6 +104,12 @@
     </div>
 
     <script type="text/javascript">
+      d3.selectAll('input')
+          .each(function () {
+              var evt = new Event('input');
+              this.dispatchEvent(evt);
+          });
+
       function run() {
           if (typeof(s) != 'undefined')
               s.stop();

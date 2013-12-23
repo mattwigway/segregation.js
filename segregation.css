@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-body { font-family: "Helvetica Neue", "Neue Helvetica", Helvetica, sans }
+body { font-family: "Helvetica Neue", "Neue Helvetica", Helvetica, sans; font-size: 10px }
 #controls { width: 300px; float: left }
 #board { float: left }
 #statistics { float: left; padding-left: 4px }
@@ -29,3 +29,4 @@ body { font-family: "Helvetica Neue", "Neue Helvetica", Helvetica, sans }
 .path { stroke-width: 1; stroke: #444; fill: none }
 .threshold { fill: none; stroke: #afc; stroke-width: 1 }
 .readout { font-size: 50px }
+.inputReadout { color: #666 }
