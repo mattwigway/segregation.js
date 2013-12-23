@@ -15,9 +15,9 @@
 */
 
 body { font-family: "Helvetica Neue", "Neue Helvetica", Helvetica, sans; font-size: 10px }
-#controls { width: 300px; float: left }
+#controls { float: left; margin-top: 60px }
 #board { float: left }
-#statistics { float: left; padding-left: 4px }
+#statistics { float: left; padding-left: 4px; margin-top: 35px }
 .clear { clear: both }
 .vacant { fill: #eee }
 .group1.happy { fill: #e20 }

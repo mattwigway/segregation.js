@@ -194,7 +194,7 @@ org.indicatrix.Segregation.prototype.start = function () {
         }
         instance.display();
         if (!done)
-            instance.timeout = setTimeout(doStep, 50);
+            instance.timeout = setTimeout(doStep, 120);
     }
 
     doStep();
