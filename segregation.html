@@ -26,7 +26,7 @@
   <body>
     <div id="content">
       <div id="controls">
-        <form id="input">
+        <form id="input" onsubmit="run(); return false;">
           <table>
             <tr>
               <td>
@@ -78,7 +78,7 @@
             </tr>
             <tr>
               <td colspan="3">
-                <a href="#" onclick="run()">Run Model</a>
+                <input type="submit" value="Run Model"</a>
               </td>
             </tr>
           </table>
