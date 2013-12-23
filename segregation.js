@@ -82,6 +82,95 @@ org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
 
         this.circleMatrix.push(c);
     }
+    
+    this.meanPercentAlike = [];    
+    this.percentUnhappy = [];
+    this.vscale = d3.scale.linear()
+        .domain([0, 100])
+        .range([100, 0]);
+
+    var percentAlikeChart = d3.select('#percentAlikeChart')
+        .append('svg')
+        .attr('width', 250)
+        .attr('height', 100)
+        .append('g');
+
+    var percentUnhappyChart = d3.select('#percentUnhappyChart')
+        .append('svg')
+        .attr('width', 250)
+        .attr('height', 100)
+        .append('g');
+
+    // add scales
+    var initChart = function (i) {
+        i.append('text')
+            .attr('x', 0)
+            .attr('y', 10)
+            .attr('class', 'scale')
+            .text('100');
+
+        i.append('text')
+            .attr('x', 0)
+            .attr('y', 98)
+            .attr('class', 'scale')
+            .text('0');
+
+        i.append('line')
+            .attr('x1', 0)
+            .attr('y1', 1)
+            .attr('x2', 250)
+            .attr('y2', 1)
+            .attr('class', 'gridline');
+
+        i.append('line')
+            .attr('x1', 0)
+            .attr('y1', 99)
+            .attr('x2', 250)
+            .attr('y2', 99)
+            .attr('class', 'gridline');
+    }
+    initChart(percentUnhappyChart);
+    initChart(percentAlikeChart);
+    
+    this.hscale = d3.scale.linear()
+        .domain([0, this.meanPercentAlike.length - 1])
+        .range([0, 250]);
+
+    this.lineGenerator = d3.svg.line()
+        .x(function (d, i) { return instance.hscale(i) })
+        .y(function (d) { return instance.vscale(d) });
+
+    this.percentAlikeLine = percentAlikeChart
+        .append('path')
+        .attr('class', 'path');
+
+    this.percentUnhappyLine = percentUnhappyChart
+        .append('path')
+        .attr('class', 'path');
+
+    // show the threshold
+    percentAlikeChart
+        .append('line')
+        .attr('x1', 0)
+        .attr('x2', 250)
+        .attr('y1', this.vscale(this.tolerance * 100))
+        .attr('y2', this.vscale(this.tolerance * 100))
+        .attr('class', 'threshold');
+
+    // label
+    percentAlikeChart
+        .append('text')
+        .attr('x', 157)
+        .attr('y', 10)
+        .text('MEAN LIKE NEIGHBORS')
+        .attr('class', 'scale');
+
+    percentUnhappyChart
+        .append('text')
+        .attr('x', 172)
+        .attr('y', 10)
+        .text('UNHAPPY AGENTS')
+        .attr('class', 'scale');
 
     this.display();
 }
@@ -98,7 +187,7 @@ org.indicatrix.Segregation.prototype.start = function () {
     doStep = function () {
         console.log('stepping');
         var done = false;
-        for (var i = 0; i < 50; i++) {
+        for (var i = 0; i < 20; i++) {
             if (!instance.step()) {
                 done = true;
                 break;
@@ -136,6 +225,21 @@ org.indicatrix.Segregation.prototype.display = function () {
 
         this.circleMatrix[i].attr('class', theClass);
     }
+
+    // draw the charts
+    var meanPercentAlike = this.getMeanPercentAlike() * 100;
+    var percentUnhappy = this.getPercentUnhappy() * 100;
+    
+    this.meanPercentAlike.push(meanPercentAlike);
+    this.percentUnhappy.push(percentUnhappy);
+
+    this.hscale.domain([0, this.meanPercentAlike.length - 1]);
+
+    this.percentUnhappyLine.attr('d', this.lineGenerator(this.percentUnhappy));
+    this.percentAlikeLine.attr('d', this.lineGenerator(this.meanPercentAlike));
+
+    d3.select('#percentUnhappyReadout').text('' + Math.round(percentUnhappy) + '%');
+    d3.select('#percentAlikeReadout').text('' + Math.round(meanPercentAlike) + '%');
 }
 
 org.indicatrix.Segregation.prototype.step = function () {
