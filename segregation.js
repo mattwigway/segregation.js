@@ -19,9 +19,9 @@ if (org.indicatrix == undefined) org.indicatrix = {};
 
 org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
     var instance = this;
-    this.size = size;
-    this.pxSize = pxSize;
-    this.tolerance = tolerance;
+    this.size = Number(size);
+    this.pxSize = Number(pxSize);
+    this.tolerance = Number(tolerance);
     
     // >= because there must always be one empty cell for an unhappy cell to move to
     if (n1 + n2 >= Math.pow(this.size, 2)) {
@@ -359,19 +359,19 @@ org.indicatrix.Segregation.prototype.getCellAlike = function (cell) {
     for (var i = 0; i < 8; i++) {
         cellValue = this.matrix[neighbors[i]];
         if (cellValue != 0) {
-            total += 1;
+            total++;
             if (cellValue == thisCell) {
-                like += 1;
+                like++;
             }
         }
     }
 
     return like / total;
-} 
+}
 
     
 org.indicatrix.Segregation.prototype.torus = function (i) {
-    if (i < 0) return this.size - i;
+    if (i < 0) return this.size + i;
     if (i >= this.size) return i - this.size;
     return i;
 }
@@ -405,13 +405,15 @@ org.indicatrix.Segregation.prototype.getCellForCoordinates = function(row, col) 
  */
 org.indicatrix.Segregation.prototype.getMeanPercentAlike = function () {
     var accumulator = 0;
+    var total = 0;
     for (var i = 0; i < this.matrixLen; i++) {
         if (this.matrix[i] == 0)
             continue;
+        total++;
         accumulator += this.percentAlike[i] / 255;
     }
 
-    return accumulator / this.matrixLen;
+    return accumulator / total;
 }
 
 /**
