@@ -102,6 +102,70 @@
       
       <div class="clear"></div>
     </div>
+    
+    <div id="about">
+     <p>
+      This is an implementation
+      of <a href="https://class.coursera.org/modelthinking/lecture/16">Schelling's
+      spatial segregation model</a> in JavaScript. This is an
+      agent-based model in which the agents (the red and purple dots
+      in the image above) represent two groups choosing residential
+      locations. Each agent decides whether it is happy or unhappy in
+      a neighborhood based on whether its neighbors are like it or
+      not. There is a threshold for the percentage of like neighbors
+      required to be happy. For instance, if the threshold is 25% and
+      2 out of 8 neighbors are like the agent, the agent will be
+      happy. However, if the threshold is 35%, the agent will not be
+      happy and will move.
+     </p>
+
+     <p>
+       What is interesting about the model is that, even with a
+       relatively low threshold, say 30%, extreme segregation
+       results. Thus, fairly tolerant agents end up in segregated
+       neighborhoods despite a tolerance for diversity.
+     <p>
+
+     <p>
+       The threshold has already been described. The fill factor
+       determines what percentage of grid cells are occupied; for
+       instance, a 95% fill factor leaves 5% of the cells vacant. The
+       grid size simply determines how large the simulation grid
+       is. The balance slider determines the balance between members
+       of one group and members of another; if set to 50% there will
+       be the same number of red and purple agents.
+     </p>
+
+     <p>
+       The numbers on the right show the mean percentage of like
+       neighbors and the percentage of unhappy cells. The mean
+       percentage of like neighbors is the arithmetic mean of the
+       percentages of like neighbors to total neighbors for each
+       cell. More segregated layouts have higher numbers. The
+       percentage of unhappy cells is the percentage of the cells that
+       are currently unhappy. The graphs show the progression of these
+       statistics over the course of the model run.
+     </p>
+
+     <p>
+       The model is initialized by placing the cells randomly on the
+       board. On each step of the model, a randomly selected unhappy
+       cell is moved to a randomly selected vacant cell; the display
+       updates every 20 steps. The interface was inspired by
+       the <a href="http://ccl.northwestern.edu/netlogo/models/Segregation">NetLogo
+       Segregation model</a>, and the choice of a random vacant cell
+       as the destination of each move was inspired
+       by <a href="http://web.mit.edu/rajsingh/www/lab/alife/schelling.html">Raj
+       Singh's implementation.</a>
+     </p>
+
+     <p>
+       Implemented using <a href="http://www.d3js.org">d3</a>. This
+       project is open-source
+       and <a href="https://www.github.com/mattwigway/segregation.js">available
+       on GitHub</a>. Copyright &copy; 2013 by Matthew Wigginton Conway.
+     </p>
+    </div>
 
     <script type="text/javascript">
       d3.selectAll('input')
