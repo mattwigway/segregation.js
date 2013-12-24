@@ -23,6 +23,10 @@ org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
     this.pxSize = Number(pxSize);
     this.tolerance = Number(tolerance);
     
+    // Make them integers
+    n1 = Math.round(n1);
+    n2 = Math.round(n2);
+
     // >= because there must always be one empty cell for an unhappy cell to move to
     if (n1 + n2 >= Math.pow(this.size, 2)) {
         console.log('Number of agents must be smaller than number of cells!');
@@ -42,14 +46,39 @@ org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
     this.percentAlike = new Uint8ClampedArray(this.matrixLen);
 
     // populate the matrix
-    for (var i = 0; i < n1; i++) {
+    var balance = n1 / (n1 + n2);
+    var c1 = 0;
+    var c2 = 0;
+    for (var i = 0; i < n1 + n2; i++) {
         var cell  = this.getVacantCell();
-        this.matrix[cell] = 1;
+
+        if (c1 < n1 && c2 < n2) {
+            if (Math.random() < balance) {
+                this.matrix[cell] = 1;
+                c1++;
+            }
+            else {
+                this.matrix[cell] = 2;
+                c2++;
+            }
+        }
+        else if (c1 < n1) {
+            this.matrix[cell] = 1;
+            c1++;
+        }
+        else if (c2 < n2) {
+            this.matrix[cell] = 2;
+            c2++;
+        }
+        else {
+            console.log('Distribution error: counts equal to n but loop still running');
+            return false;
+        }
     }
 
-    for (var i = 0; i < n2; i++) {
-        var cell  = this.getVacantCell();
-        this.matrix[cell] = 2;
+    if (c1 != n1 || c2 != n2) {
+        console.log('Distribution error: distribution does not match specified');
+        return false;
     }
 
     // populate cell caches
