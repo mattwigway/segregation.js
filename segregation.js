@@ -42,8 +42,8 @@ org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
     for (var i = 0; i < this.matrixLen; i++) this.matrix[i] = 0;
 
     // cache percent alike
-    // stored as 8-bit ints, with 0 being 0% alike and 255 being 100% alike.
-    this.percentAlike = new Uint8ClampedArray(this.matrixLen);
+    // stored as 16-bit ints, with 0 being 0% alike and 65535 being 100% alike.
+    this.percentAlike = new Uint16Array(this.matrixLen);
 
     // populate the matrix
     var balance = n1 / (n1 + n2);
@@ -84,7 +84,7 @@ org.indicatrix.Segregation = function (size, pxSize, tolerance, n1, n2) {
     // populate cell caches
     for (var i = 0; i < this.matrixLen; i++) {
         this.cellStatus[i] = this.getCellStatus(i);
-        this.percentAlike[i] = Math.round(this.getCellAlike(i) * 255);
+        this.percentAlike[i] = Math.round(this.getCellAlike(i) * 65535);
     }
 
     // build the display board
@@ -295,7 +295,7 @@ org.indicatrix.Segregation.prototype.step = function () {
     for (var i = 0; i < 18; i++) {
         var cell = neighbors[i];
         this.cellStatus[cell] = this.getCellStatus(cell);
-        this.percentAlike[cell] = Math.floor(this.getCellAlike(cell) * 255);
+        this.percentAlike[cell] = Math.round(this.getCellAlike(cell) * 65535);
     }
 
     return true;
@@ -438,7 +438,7 @@ org.indicatrix.Segregation.prototype.getMeanPercentAlike = function () {
         if (this.matrix[i] == 0)
             continue;
         total++;
-        accumulator += this.percentAlike[i] / 255;
+        accumulator += this.percentAlike[i] / 65535;
     }
 
     return accumulator / total;
