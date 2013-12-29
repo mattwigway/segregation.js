@@ -153,18 +153,22 @@
        The model is initialized by placing the cells randomly on the
        board. On each step of the model, a randomly selected unhappy
        cell is moved to a randomly selected vacant cell; the display
-       updates every 20 steps. The interface was inspired by
+       updates every 20 steps. Schelling's book <i>Micromotives and
+       Macrobehavior</i> contains a good description of the model's
+       operation in general as well as its behavior under specific
+       circumstances, on pages 147&ndash;155 (in the 1978 paperback,
+       anyhow). The interface was inspired by
        the <a href="http://ccl.northwestern.edu/netlogo/models/Segregation">NetLogo
        Segregation model</a>, and the choice of a random vacant cell
        as the destination of each move was inspired
        by <a href="http://web.mit.edu/rajsingh/www/lab/alife/schelling.html">Raj
        Singh's implementation.</a> Edge effects are corrected by
        treating the space as a torus; the top row is considered
-       adjacent to the bottom row and the rightmost column is considered
-       adjacent to the leftmost column.
+       adjacent to the bottom row and the rightmost column is
+       considered adjacent to the leftmost column.
      </p>
 
-     <p>
+     <p class="boilerplate">
        Implemented using <a href="http://www.d3js.org">d3</a>
        and <a href="https://github.com/fryn/html5slider">html5slider</a>. This
        project is open-source

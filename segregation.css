@@ -32,3 +32,4 @@ body { font-family: "Helvetica Neue", "Neue Helvetica", Helvetica, sans; font-si
 .inputReadout { color: #666 }
 #about { width: 600px; font-size: 11pt; font-family: serif;
          text-align: justify }
+.boilerplate { font-family: "Helvetica Neue", "Neue Helvetica", Helvetica, sans; font-size: 10px }
