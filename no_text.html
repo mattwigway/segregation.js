@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <!--
+   Copyright 2013 Matthew Wigginton Conway
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   -->
+
+  <head>
+    <title>Schelling's Spatial Segregation Model</title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="html5slider.js"></script>
+    <script src="segregation.js"></script>
+
+    <link rel="stylesheet" href="segregation.css" />
+  </head>
+  <body>
+    <div id="content">
+      <div id="controls">
+        <form id="input" onsubmit="run(); return false;">
+          <table>
+            <tr>
+              <td>
+                <label for="tolerance">Threshold</label>
+              </td>
+              <td >
+                <input type="range" id="tolerance" oninput="toleranceReadout.value = '' + Math.round(this.value * 100) + '%'"
+                       min="0" max="1" step="0.01" value="0.3" />
+              </td>
+              <td>
+                <output for="tolerance" class="inputReadout" name="toleranceReadout" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="fill">Fill factor</label>
+              </td>
+              <td >
+                <input type="range" id="fill" oninput="fillReadout.value = '' + Math.round(this.value * 100) + '%'"
+                       min="0" max="1" step="0.01" value="0.95" />
+              </td>
+              <td>
+                <output for="fill" class="inputReadout" name="fillReadout" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="size">Grid size</label>
+              </td>
+              <td >
+                <input type="range" id="size" oninput="sizeReadout.value = '' + this.value + 'x' + this.value"
+                       min="2" max="40" step="1" value="30" />
+              </td>
+              <td>
+                <output for="size" class="inputReadout" name="sizeReadout" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="balance">Balance</label>
+              </td>
+              <td>
+                <input type="range" id="balance" oninput="balanceReadout.value = '' + Math.round(this.value * 100) + '%'"
+                       min="0" max="1" step="0.01" value="0.5" />
+              </td>
+              <td>
+                <output for="balance" class="inputReadout" name="balanceReadout" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3">
+                <input type="submit" value="Run Model"</a>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+      
+      <div id="board" class="clearme">
+        <!-- board spaces will be populated here -->
+      </div>
+
+      <div id="statistics">
+        <div>
+          <span id="percentAlikeChart" class="clearme"></span>
+          <span id="percentAlikeReadout" class="readout clearme"></span>
+        </div>
+        <div>
+          <span id="percentUnhappyChart" class="clearme"></span>
+          <span id="percentUnhappyReadout" class="readout clearme"></span>
+        </div>
+      </div>
+      
+      <div class="clear"></div>
+    </div>
+
+
+    <script type="text/javascript">
+      d3.selectAll('input')
+          .each(function () {
+              var evt = new Event('input');
+              this.dispatchEvent(evt);
+          });
+
+      function run() {
+          if (typeof(s) != 'undefined')
+              s.stop();
+
+          
+          d3.selectAll('.clearme').html('');
+          var tol = d3.select('#tolerance')[0][0].value;
+          var size = d3.select('#size')[0][0].value;
+          var fill = d3.select('#fill')[0][0].value;
+          var totalAgents = fill * (Math.pow(size, 2) - 1); // there needs always to be a single vacant square
+          var n2 = d3.select('#balance')[0][0].value * totalAgents;
+          var n1 = totalAgents - n2;
+          s = new org.indicatrix.Segregation(size, 300, tol, n1, n2);
+          s.start();
+      }
+    </script>
+  </body>
+</html>
